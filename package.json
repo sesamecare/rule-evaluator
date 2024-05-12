@@ -1,0 +1,79 @@
+{
+  "name": "@sesamecare-oss/rule-evaluator",
+  "version": "0.0.0",
+  "description": "A dynamic rule evaluation DSL that supports lazy data resolution, but not async. Compatible with react-native",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "author": "Developers <developers@sesamecare.com>",
+  "license": "UNLICENSED",
+  "packageManager": "yarn@3.6.0",
+  "scripts": {
+    "build:code": "tsc -p tsconfig.build.json",
+    "build:parser": "ts-node src/language.ts",
+    "build": "yarn build:parser && yarn build:code",
+    "clean": "yarn dlx rimraf ./dist",
+    "lint": "eslint .",
+    "postinstall": "coconfig",
+    "test": "vitest"
+  },
+  "keywords": [
+    "typescript",
+    "sesame"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sesamecare/ts-async-rule-evaluator.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/exec",
+        {
+          "publishCmd": "yarn dlx pinst --disable"
+        }
+      ],
+      "@semantic-release/npm",
+      "@semantic-release/github"
+    ]
+  },
+  "config": {
+    "coconfig": "@openapi-typescript-infra/coconfig"
+  },
+  "devDependencies": {
+    "@openapi-typescript-infra/coconfig": "^4.2.2",
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/github": "^9.2.3",
+    "@types/lodash.difference": "^4.5.9",
+    "@types/lodash.intersection": "^4.4.9",
+    "@types/lodash.topath": "^4.5.9",
+    "@types/lodash.union": "^4.6.9",
+    "@types/lodash.uniq": "^4.5.9",
+    "@types/node": "^20.9.1",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/parser": "^6.11.0",
+    "coconfig": "^1.0.0",
+    "eslint": "^8.53.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.0",
+    "jison": "^0.4.18",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.6"
+  },
+  "dependencies": {
+    "lodash.difference": "^4.5.0",
+    "lodash.intersection": "^4.4.0",
+    "lodash.topath": "^4.5.2",
+    "lodash.union": "^4.6.0",
+    "lodash.uniq": "^4.5.0"
+  }
+}
