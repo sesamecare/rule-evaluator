@@ -32,4 +32,23 @@ describe('Object support', () => {
     const checkfornull = toFunction('myobj.myprop');
     expect(checkfornull({ myobj: { myprop: null } })).not.toBeTruthy();
   });
+
+  test('changing the context should work, but not call functions twice', () => {
+    let calls = 0;
+    const ctx = {
+      foo: 1,
+      bar() {
+        calls++;
+        return ctx.foo;
+      }
+    };
+    const checkFoo = toFunction('foo > 10');
+    const checkBar = toFunction('bar > 10');
+    expect(checkFoo(ctx)).not.toBeTruthy();
+    expect(checkBar(ctx)).not.toBeTruthy();
+    ctx.foo = 20;
+    expect(checkFoo(ctx)).toBeTruthy();
+    expect(checkBar(ctx)).not.toBeTruthy();
+    expect(calls).toBe(1);
+  });
 });
