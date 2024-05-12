@@ -121,7 +121,7 @@ describe('test_function', () => {
     expect(code, 'Code should match').toMatchInlineSnapshot(`
       "function anonymous(fns,std,prop
       ) {
-      return (std.numify((std.numify((prop(\\"transactions\\"))<=(5)))&&(std.numify(((std.isfn(fns, \\"abs\\") ? (fns[\\"abs\\"].call(prop, (prop(\\"profit\\")))) : std.unknown(\\"abs\\")))> (20.5)))));
+      return (std.numify((std.numify((prop("transactions"))<=(5)))&&(std.numify(((std.isfn(fns, "abs") ? (fns["abs"].call(prop, (prop("profit")))) : std.unknown("abs")))> (20.5)))));
       }"
     `);
   });

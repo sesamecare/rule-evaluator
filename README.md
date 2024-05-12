@@ -143,7 +143,7 @@ myfilter({ firstname: 'Joseph' }); // returns 1
 
 **What's Jison?**
 
-[Jison](http://zaach.github.io/jison/) is used by async-rule-evaluator to generate the grammar. It's a JavaScript parser generator that does the underlying hard work of understanding the expression. It's based on Flex and Bison. You should not need it at runtime since we
+[Jison](http://zaach.github.io/jison/) is used by rule-evaluator to generate the grammar. It's a JavaScript parser generator that does the underlying hard work of understanding the expression. It's based on Flex and Bison. You should not need it at runtime since we
 pregenerate the parser and publish it with the package.
 
 **License?**
