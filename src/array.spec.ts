@@ -25,6 +25,11 @@ describe('Array support', () => {
     expect(runFilter('1 in 1')).toBe(1);
     expect(runFilter('(1, 2) not in 1')).toBe(1);
     expect(runFilter('1 not in 1')).toBe(0);
+
+    expect(runFilter('"foo" in tags', { tags: ['foo', 'bar'] })).toBe(1);
+    expect(runFilter('"foo" not in tags', { tags: ['foo', 'bar'] })).toBe(0);
+    expect(runFilter('"foo" in tags', { tags: ['bar'] })).toBe(0);
+    expect(runFilter('"foo" in tags')).toBe(0);
   });
 
   test('string support', async () => {
