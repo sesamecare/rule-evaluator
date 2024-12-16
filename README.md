@@ -6,7 +6,7 @@
 
 A simple DSL based on [Filtrex](https://github.com/joewalnes/filtrex) and its forks that supports lazy comparisons.
 Essentially this means the object you pass in for matching can include functions that don't evaluate unless a comparison
-asks for them. Updated to be a *little* more Typescript friendly even though it's inherently a loosely typed system.
+asks for them. Updated to be a _little_ more Typescript friendly even though it's inherently a loosely typed system.
 
 The main thing we took from Filtrex is the grammar, which seemed like a good one,
 but modified for our use case. For example, we removed the `x of y` syntax in favor
@@ -93,7 +93,7 @@ Okay, I lied to you, there are also objects whose properties can be accessed wit
 | ------------------ | --------------------------------------------------------------------------------- |
 | (a, b, c)          | Array                                                                             |
 | [a, b, c]          | Array (synonym)                                                                   |
-| a in b             | Array a is a subset of array b                                                    |
+| a in b             | Array a is a subset of array b and also works with array of objects               |
 | a in~ b            | Array a is a subset of array b using string conversion for comparison             |
 | x.y                | Property y of object x (x can be a function/promise, y can be a function/promise) |
 

@@ -3,6 +3,7 @@ import unique from 'lodash.uniq';
 import union from 'lodash.union';
 import intersection from 'lodash.intersection';
 import difference from 'lodash.difference';
+import find from 'lodash.find';
 
 import { FiltrexParser } from './generated/parser';
 
@@ -40,7 +41,12 @@ const std = {
   isSubset(a: FiltrexType, b: FiltrexType) {
     const A = std.coerceArray(a);
     const B = std.coerceArray(b);
-    return +A.every((val) => B.includes(val));
+    return +A.every((val) => {
+      if (typeof val === 'object') {
+        return find(B, val) !== undefined;
+      }
+      return B.includes(val);
+    });
   },
 
   isSubsetInexact(a: FiltrexType, b: FiltrexType) {

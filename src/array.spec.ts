@@ -30,6 +30,18 @@ describe('Array support', () => {
     expect(runFilter('"foo" not in tags', { tags: ['foo', 'bar'] })).toBe(0);
     expect(runFilter('"foo" in tags', { tags: ['bar'] })).toBe(0);
     expect(runFilter('"foo" in tags')).toBe(0);
+
+    // array of objects
+    const inArray = toFunction('foo in array');
+    expect(inArray({ foo: { a: 3 }, array: [{ a: 1 }, { a: 2 }] })).toBe(0);
+    expect(inArray({ foo: { a: 1 }, array: [{ a: 2 }, { a: 1 }] })).toBe(1);
+    // should match by value fields and see if it exists in the collection
+    expect(inArray({ foo: { b: true }, array: [{ a: 1 }, { a: 2, b: true }] })).toBe(1);
+    expect(inArray({ foo: { a: 1, b: false }, array: [{ a: 2 }, { a: 1, b: true }] })).toBe(0);
+
+    const notInArray = toFunction('foo not in array');
+    expect(notInArray({ foo: { a: 1, b: false }, array: [{ a: 2 }, { a: 1, b: true }] })).toBe(1);
+    expect(notInArray({ foo: { a: 2 }, array: [{ a: 2 }, { a: 1, b: true }] })).toBe(0);
   });
 
   test('string support', async () => {

@@ -679,6 +679,7 @@ __metadata:
     "@semantic-release/exec": ^6.0.3
     "@semantic-release/github": ^10.0.3
     "@types/lodash.difference": ^4.5.9
+    "@types/lodash.find": ^4.6.9
     "@types/lodash.intersection": ^4.4.9
     "@types/lodash.topath": ^4.5.9
     "@types/lodash.union": ^4.6.9
@@ -693,6 +694,7 @@ __metadata:
     eslint-plugin-import: ^2.29.1
     jison: ^0.4.18
     lodash.difference: ^4.5.0
+    lodash.find: ^4.6.0
     lodash.intersection: ^4.4.0
     lodash.topath: ^4.5.2
     lodash.union: ^4.6.0
@@ -772,6 +774,15 @@ __metadata:
   dependencies:
     "@types/lodash": "*"
   checksum: 797d2df4190cc4734dfec0da264dd7af5829f87e67bd8e817dfacb6813289ac3d6859b7a43bb0bb85a76cc11f74bf2904b66eb6661a913642264ab069a96cd80
+  languageName: node
+  linkType: hard
+
+"@types/lodash.find@npm:^4.6.9":
+  version: 4.6.9
+  resolution: "@types/lodash.find@npm:4.6.9"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: f5955f93ada491f4c51c4eee0a0e995f66e260e9b7aaa3b136745d70a80651a06007390da9c02d85fde63387e3e34c712c8f7673b91c64a5f9047cf6aa5d367f
   languageName: node
   linkType: hard
 
@@ -3196,6 +3207,13 @@ __metadata:
   version: 4.1.2
   resolution: "lodash.escaperegexp@npm:4.1.2"
   checksum: 6d99452b1cfd6073175a9b741a9b09ece159eac463f86f02ea3bee2e2092923fce812c8d2bf446309cc52d1d61bf9af51c8118b0d7421388e6cead7bd3798f0f
+  languageName: node
+  linkType: hard
+
+"lodash.find@npm:^4.6.0":
+  version: 4.6.0
+  resolution: "lodash.find@npm:4.6.0"
+  checksum: b737f849a4fe36f5c3664ea636780dda2fde18335021faf80cdfdcb300ed75441da6f55cfd6de119092d8bb2ddbc4433f4a8de4b99c0b9c8640465b0901c717c
   languageName: node
   linkType: hard
 
