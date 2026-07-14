@@ -36,6 +36,41 @@ myfilter({ transactions: 3, profit: -40.5 }); // returns 1
 myfilter({ transactions: 3, profit: -14.5 }); // returns 0
 ```
 
+## Bytecode evaluation
+
+For environments that prohibit dynamic code generation, rules can be parsed into a portable,
+versioned bytecode string and evaluated without `eval` or `new Function`:
+
+```javascript
+import { runBytecode, toBytecode } from '@sesamecare-oss/rule-evaluator/bytecode';
+
+const bytecode = toBytecode('transactions <= 5 and abs(profit) > 20.5');
+
+runBytecode(bytecode, { transactions: 3, profit: -40.5 }); // returns 1
+```
+
+Custom functions are supplied to `runBytecode` and may accept rule arguments:
+
+```javascript
+const bytecode = toBytecode('double(score) > 10');
+const functions = { double: (value) => value * 2 };
+
+runBytecode(bytecode, { score: 6 }, functions); // returns 1
+```
+
+`toBytecode` and `runBytecode` share the same language specification as `toFunction`. The
+bytecode is JSON so it can be stored or passed between execution stages. Treat it as an opaque,
+versioned value rather than depending on its internal representation.
+
+The `@sesamecare-oss/rule-evaluator/bytecode` export is also a standalone script. When loaded
+without a module system, such as through BigQuery's `library` option, it exposes the same two
+functions on the global `RuleEvaluator` object:
+
+```javascript
+const bytecode = RuleEvaluator.toBytecode('double(score) > 10');
+const result = RuleEvaluator.runBytecode(bytecode, { score: 6 }, functions);
+```
+
 Under the hood, the above expression gets compiled to a clean and fast JavaScript function, looking something like this:
 
 ```javascript

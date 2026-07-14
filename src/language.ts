@@ -3,7 +3,7 @@ import path from 'path';
 
 import { Parser } from 'jison';
 
-function code(args: (string | number)[], skipParentheses?: boolean) {
+function sourceCode(args: (string | number)[], skipParentheses?: boolean) {
   const argsJs = args
     .map((arg) => (typeof arg === 'number' ? `$${arg}` : JSON.stringify(arg)))
     .join(',');
@@ -11,7 +11,7 @@ function code(args: (string | number)[], skipParentheses?: boolean) {
   return skipParentheses ? `$$ = [${argsJs}];` : `$$ = ["(", ${argsJs}, ")"];`;
 }
 
-const grammar = {
+const language = {
   // Lexical tokens
   lex: {
     rules: [
@@ -52,7 +52,7 @@ const grammar = {
 
       // eslint-disable-next-line quotes
       [
-        '\'(?:\\\\\'|\\\\\\\\|[^\'\\\\])*\'',
+        "'(?:\\\\'|\\\\\\\\|[^'\\\\])*'",
         `yytext = yy.buildString("'", yytext);
               return "SYMBOL";`,
       ], // 'any \'escaped\' symbol'
@@ -87,67 +87,142 @@ const grammar = {
     ['left', 'not'],
     ['left', 'UMINUS'],
   ],
-  // Grammar
+};
+
+const sourceGrammar = {
+  ...language,
   bnf: {
     expressions: [
       // Entry point
       ['e EOF', 'return $1;'],
     ],
     e: [
-      ['e + e', code([1, '+', 3])],
-      ['e - e', code([1, '-', 3])],
-      ['e * e', code([1, '*', 3])],
-      ['e / e', code([1, '/', 3])],
-      ['e % e', code([1, '%', 3])],
-      ['e ^ e', code(['Math.pow(', 1, ',', 3, ')'])],
-      ['- e', code(['-', 2]), { prec: 'UMINUS' }],
-      ['e and e', code(['std.numify(', 1, '&&', 3, ')'])],
-      ['e or e', code(['std.numify(', 1, '||', 3, ')'])],
-      ['not e', code(['std.numify(!', 2, ')'])],
-      ['e == e', code(['std.numify(', 1, '==', 3, ')'])],
-      ['e != e', code(['std.numify(', 1, '!=', 3, ')'])],
-      ['e ~= e', code(['std.numify(RegExp(', 3, ').test(', 1, '))'])],
-      ['e < e', code(['std.numify(', 1, '<', 3, ')'])],
-      ['e <= e', code(['std.numify(', 1, '<=', 3, ')'])],
-      ['e > e', code(['std.numify(', 1, '> ', 3, ')'])],
-      ['e >= e', code(['std.numify(', 1, '>=', 3, ')'])],
-      ['e ? e : e', code([1, '?', 3, ':', 5])],
-      ['( e )', code([2])],
-      ['[ e ]', code(['[', 2, ']'])],
-      ['( array , e )', code(['[', 2, ',', 4, ']'])],
-      ['[ array , e ]', code(['[', 2, ',', 4, ']'])],
-      ['NUMBER', code([1])],
-      ['STRING', code([1])],
-      ['SYMBOL', code(['prop(', 1, ')'])],
-      ['SYMBOL ( )', code(['(std.isfn(fns, ', 1, ') ? (fns[', 1, '].call(prop)) : std.unknown(', 1, '))'])],
+      ['e + e', sourceCode([1, '+', 3])],
+      ['e - e', sourceCode([1, '-', 3])],
+      ['e * e', sourceCode([1, '*', 3])],
+      ['e / e', sourceCode([1, '/', 3])],
+      ['e % e', sourceCode([1, '%', 3])],
+      ['e ^ e', sourceCode(['Math.pow(', 1, ',', 3, ')'])],
+      ['- e', sourceCode(['-', 2]), { prec: 'UMINUS' }],
+      ['e and e', sourceCode(['std.numify(', 1, '&&', 3, ')'])],
+      ['e or e', sourceCode(['std.numify(', 1, '||', 3, ')'])],
+      ['not e', sourceCode(['std.numify(!', 2, ')'])],
+      ['e == e', sourceCode(['std.numify(', 1, '==', 3, ')'])],
+      ['e != e', sourceCode(['std.numify(', 1, '!=', 3, ')'])],
+      ['e ~= e', sourceCode(['std.numify(RegExp(', 3, ').test(', 1, '))'])],
+      ['e < e', sourceCode(['std.numify(', 1, '<', 3, ')'])],
+      ['e <= e', sourceCode(['std.numify(', 1, '<=', 3, ')'])],
+      ['e > e', sourceCode(['std.numify(', 1, '> ', 3, ')'])],
+      ['e >= e', sourceCode(['std.numify(', 1, '>=', 3, ')'])],
+      ['e ? e : e', sourceCode([1, '?', 3, ':', 5])],
+      ['( e )', sourceCode([2])],
+      ['[ e ]', sourceCode(['[', 2, ']'])],
+      ['( array , e )', sourceCode(['[', 2, ',', 4, ']'])],
+      ['[ array , e ]', sourceCode(['[', 2, ',', 4, ']'])],
+      ['NUMBER', sourceCode([1])],
+      ['STRING', sourceCode([1])],
+      ['SYMBOL', sourceCode(['prop(', 1, ')'])],
+      [
+        'SYMBOL ( )',
+        sourceCode(['(std.isfn(fns, ', 1, ') ? (fns[', 1, '].call(prop)) : std.unknown(', 1, '))']),
+      ],
       [
         'SYMBOL ( argsList )',
-        code(['(std.isfn(fns, ', 1, ') ? (fns[', 1, '].call(prop, ', 3, ')) : std.unknown(', 1, '))']),
+        sourceCode([
+          '(std.isfn(fns, ',
+          1,
+          ') ? (fns[',
+          1,
+          '].call(prop, ',
+          3,
+          ')) : std.unknown(',
+          1,
+          '))',
+        ]),
       ],
-      ['e in e', code(['std.isSubset(', 1, ', ', 3, ')'])],
-      ['e inexactin e', code(['std.isSubsetInexact(', 1, ', ', 3, ')'])],
-      ['e not in e', code(['+!std.isSubset(', 1, ', ', 4, ')'])],
-      ['e not inexactin e', code(['+!std.isSubsetInexact(', 1, ', ', 4, ')'])],
+      ['e in e', sourceCode(['std.isSubset(', 1, ', ', 3, ')'])],
+      ['e inexactin e', sourceCode(['std.isSubsetInexact(', 1, ', ', 3, ')'])],
+      ['e not in e', sourceCode(['+!std.isSubset(', 1, ', ', 4, ')'])],
+      ['e not inexactin e', sourceCode(['+!std.isSubsetInexact(', 1, ', ', 4, ')'])],
     ],
     argsList: [
-      ['e', code([1], true)],
-      ['argsList , e', code([1, ',', 3], true)],
+      ['e', sourceCode([1], true)],
+      ['argsList , e', sourceCode([1, ',', 3], true)],
     ],
     inSet: [
-      ['e', code(['o ==', 1], true)],
-      ['inSet , e', code([1, '|| o ==', 3], true)],
+      ['e', sourceCode(['o ==', 1], true)],
+      ['inSet , e', sourceCode([1, '|| o ==', 3], true)],
     ],
     array: [
-      ['e', code([1])],
-      ['array , e', code([1, ',', 3], true)],
+      ['e', sourceCode([1])],
+      ['array , e', sourceCode([1, ',', 3], true)],
     ],
   },
 };
 
-export const parser = new Parser(grammar);
+const astGrammar = {
+  ...language,
+  bnf: {
+    expressions: [['e EOF', 'return $1;']],
+    e: [
+      ['e + e', '$$ = ["binary", "+", $1, $3];'],
+      ['e - e', '$$ = ["binary", "-", $1, $3];'],
+      ['e * e', '$$ = ["binary", "*", $1, $3];'],
+      ['e / e', '$$ = ["binary", "/", $1, $3];'],
+      ['e % e', '$$ = ["binary", "%", $1, $3];'],
+      ['e ^ e', '$$ = ["binary", "^", $1, $3];'],
+      ['- e', '$$ = ["unary", "-", $2];', { prec: 'UMINUS' }],
+      ['e and e', '$$ = ["binary", "and", $1, $3];'],
+      ['e or e', '$$ = ["binary", "or", $1, $3];'],
+      ['not e', '$$ = ["unary", "not", $2];'],
+      ['e == e', '$$ = ["binary", "==", $1, $3];'],
+      ['e != e', '$$ = ["binary", "!=", $1, $3];'],
+      ['e ~= e', '$$ = ["binary", "~=", $1, $3];'],
+      ['e < e', '$$ = ["binary", "<", $1, $3];'],
+      ['e <= e', '$$ = ["binary", "<=", $1, $3];'],
+      ['e > e', '$$ = ["binary", ">", $1, $3];'],
+      ['e >= e', '$$ = ["binary", ">=", $1, $3];'],
+      ['e ? e : e', '$$ = ["conditional", $1, $3, $5];'],
+      ['( e )', '$$ = $2;'],
+      ['[ e ]', '$$ = ["array", [$2]];'],
+      ['( array , e )', '$$ = ["array", $2.concat([$4])];'],
+      ['[ array , e ]', '$$ = ["array", $2.concat([$4])];'],
+      ['NUMBER', '$$ = ["literal", Number($1)];'],
+      ['STRING', '$$ = ["literal", JSON.parse($1)];'],
+      ['SYMBOL', '$$ = ["property", JSON.parse($1)];'],
+      ['SYMBOL ( )', '$$ = ["call", JSON.parse($1), []];'],
+      ['SYMBOL ( argsList )', '$$ = ["call", JSON.parse($1), $3];'],
+      ['e in e', '$$ = ["binary", "in", $1, $3];'],
+      ['e inexactin e', '$$ = ["binary", "in~", $1, $3];'],
+      ['e not in e', '$$ = ["binary", "not in", $1, $4];'],
+      ['e not inexactin e', '$$ = ["binary", "not in~", $1, $4];'],
+    ],
+    argsList: [
+      ['e', '$$ = [$1];'],
+      ['argsList , e', '$$ = $1.concat([$3]);'],
+    ],
+    array: [
+      ['e', '$$ = [$1];'],
+      ['array , e', '$$ = $1.concat([$3]);'],
+    ],
+  },
+};
+
+export const parser = new Parser(sourceGrammar);
+export const astParser = new Parser(astGrammar);
 
 if (require.main === module) {
   const parserSource = parser.generate({ moduleType: 'js', debug: true });
   fs.mkdirSync(path.join(__dirname, 'generated'), { recursive: true });
-  fs.writeFileSync(path.join(__dirname, 'generated', 'parser.ts'), `//@ts-nocheck\n${parserSource}\nexport const FiltrexParser = parser;\n`, 'utf8');
+  fs.writeFileSync(
+    path.join(__dirname, 'generated', 'parser.ts'),
+    `//@ts-nocheck\n${parserSource}\nexport const FiltrexParser = parser;\n`,
+    'utf8',
+  );
+  const astParserSource = astParser.generate({ moduleType: 'js', debug: true });
+  fs.writeFileSync(
+    path.join(__dirname, 'generated', 'ast-parser.ts'),
+    `//@ts-nocheck\n${astParserSource}\nexport const FiltrexAstParser = parser;\n`,
+    'utf8',
+  );
 }

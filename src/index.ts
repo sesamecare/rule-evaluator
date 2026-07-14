@@ -46,7 +46,7 @@ const std = {
   isSubsetInexact(a: FiltrexType, b: FiltrexType) {
     const A = std.coerceArray(a);
     const B = std.coerceArray(b);
-    return +A.every((val) => B.findIndex((v) => (String(v) === String(val))) >= 0);
+    return +A.every((val) => B.findIndex((v) => String(v) === String(val)) >= 0);
   },
 
   buildString(inQuote: FiltrexType, inLiteral: FiltrexType) {
@@ -54,18 +54,29 @@ const std = {
     const literal = String(inLiteral);
     let built = '';
 
-    if (literal[0] !== quote || literal[literal.length - 1] !== quote) throw new Error('Unexpected internal error: String literal doesn\'t begin/end with the right quotation mark.');
+    if (literal[0] !== quote || literal[literal.length - 1] !== quote)
+      throw new Error(
+        "Unexpected internal error: String literal doesn't begin/end with the right quotation mark.",
+      );
 
     for (let i = 1; i < literal.length - 1; i += 1) {
       if (literal[i] === '\\') {
         i += 1;
-        if (i >= literal.length - 1) throw new Error('Unexpected internal error: Unescaped backslash at the end of string literal.');
+        if (i >= literal.length - 1)
+          throw new Error(
+            'Unexpected internal error: Unescaped backslash at the end of string literal.',
+          );
 
         if (literal[i] === '\\') built += '\\';
         else if (literal[i] === quote) built += quote;
-        else throw new Error(`Unexpected internal error: Invalid escaped character in string literal: ${literal[i]}`);
+        else
+          throw new Error(
+            `Unexpected internal error: Invalid escaped character in string literal: ${literal[i]}`,
+          );
       } else if (literal[i] === quote) {
-        throw new Error('Unexpected internal error: String literal contains unescaped quotation mark.');
+        throw new Error(
+          'Unexpected internal error: String literal contains unescaped quotation mark.',
+        );
       } else {
         built += literal[i];
       }
@@ -104,7 +115,9 @@ export function getObjectResolver(obj: FiltrexType) {
     // If we find a function, invoke it and cache the result (which is often a promise)
     while (current != null && index < length) {
       const key = String(path[index]);
-      let currentVal = Object.prototype.hasOwnProperty.call(current, key) ? current[key] : undefined;
+      let currentVal = Object.prototype.hasOwnProperty.call(current, key)
+        ? current[key]
+        : undefined;
       if (typeof currentVal === 'function') {
         let cacheEntry = cachedPromises.get(current);
         if (cacheEntry && Object.hasOwnProperty.call(cacheEntry, key)) {
@@ -125,9 +138,13 @@ export function getObjectResolver(obj: FiltrexType) {
       current = currentVal;
       index += 1;
     }
-    return (index && index === length) ? current : undefined;
+    return index && index === length ? current : undefined;
   }
-  Object.defineProperty(obj, OBJECT_RESOLVER, { value: objectResolver, enumerable: false, configurable: true });
+  Object.defineProperty(obj, OBJECT_RESOLVER, {
+    value: objectResolver,
+    enumerable: false,
+    configurable: true,
+  });
   return objectResolver;
 }
 
@@ -142,7 +159,10 @@ interface FunctionCompilerOptions {
   customResolver?: (name: string) => Promise<FiltrexType>;
 }
 
-export function toFunction(input: string, { functions, onParse, customResolver }: FunctionCompilerOptions = {}) {
+export function toFunction(
+  input: string,
+  { functions, onParse, customResolver }: FunctionCompilerOptions = {},
+) {
   const allFunctions = {
     abs: Math.abs,
     ceil: Math.ceil,
@@ -153,7 +173,9 @@ export function toFunction(input: string, { functions, onParse, customResolver }
     random: Math.random,
     round: Math.round,
     sqrt: Math.sqrt,
-    length(o: FiltrexType) { return o?.length || 0; },
+    length(o: FiltrexType) {
+      return o?.length || 0;
+    },
     lower(a: FiltrexType) {
       if (a === null || a === undefined) {
         return a;

@@ -67,10 +67,7 @@ describe('test_function', () => {
     let filter = toFunction('lower(foo) == "brookline"');
     expect(filter({ foo: 'BROOKLINE' }), 'Should match intended target').toBeTruthy();
     expect(filter({ foo: 'brookline' }), 'Should match intended target').toBeTruthy();
-    expect(
-      filter({ foo: 'brooklinen' }),
-      'Should not match unintended target',
-    ).not.toBeTruthy();
+    expect(filter({ foo: 'brooklinen' }), 'Should not match unintended target').not.toBeTruthy();
 
     filter = toFunction('lower(foo) ~= "^brookline"');
     expect(filter({ foo: 'BROOKLINE' }), 'Should match intended target').toBeTruthy();
@@ -80,10 +77,7 @@ describe('test_function', () => {
     const filter = toFunction('substr(foo, 0, 5) == "01234"');
     expect(filter({ foo: '0123456789' }), 'Should match intended target').toBeTruthy();
     expect(filter({ foo: '01234' }), 'Should match intended target').toBeTruthy();
-    expect(
-      filter({ foo: '12345678' }),
-      'Should not match unintended target',
-    ).not.toBeTruthy();
+    expect(filter({ foo: '12345678' }), 'Should not match unintended target').not.toBeTruthy();
   });
 
   test('multiparam custom function', () => {
@@ -134,5 +128,5 @@ describe('test_function', () => {
       functions: { selfProp },
     });
     expect(fn({ foo: 'bar' }), 'Should be able to access prop value').toBe('bar');
-  })
+  });
 });

@@ -40,7 +40,7 @@ describe('Object support', () => {
       bar() {
         calls++;
         return ctx.foo;
-      }
+      },
     };
     const checkFoo = toFunction('foo > 10');
     const checkBar = toFunction('bar > 10');

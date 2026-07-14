@@ -4,13 +4,27 @@
   "description": "A dynamic rule evaluation DSL that supports lazy data resolution, but not async. Compatible with react-native",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "require": "./build/index.js",
+      "default": "./build/index.js"
+    },
+    "./bytecode": {
+      "types": "./build/bytecode.d.ts",
+      "import": "./build/bytecode.mjs",
+      "require": "./build/bytecode.js",
+      "default": "./build/bytecode.js"
+    }
+  },
   "author": "Developers <developers@sesamecare.com>",
   "license": "UNLICENSED",
   "packageManager": "yarn@3.6.0",
   "scripts": {
     "build:code": "tsc -p tsconfig.build.json",
     "build:parser": "ts-node src/language.ts",
-    "build": "yarn build:parser && yarn build:code",
+    "build:standalone": "esbuild src/bytecode.ts --bundle --minify --platform=neutral --target=es2017 --format=iife --global-name=RuleEvaluator --outfile=build/bytecode.js --footer:js=\"if(typeof module!=='undefined')module.exports=RuleEvaluator;\" && esbuild src/bytecode.ts --bundle --minify --platform=neutral --target=es2017 --format=esm --outfile=build/bytecode.mjs",
+    "build": "yarn build:parser && yarn build:code && yarn build:standalone",
     "clean": "yarn dlx rimraf ./dist",
     "lint": "eslint .",
     "postinstall": "coconfig",
@@ -48,26 +62,28 @@
     "coconfig": "@openapi-typescript-infra/coconfig"
   },
   "devDependencies": {
-    "@openapi-typescript-infra/coconfig": "^4.4.0",
-    "@semantic-release/exec": "^6.0.3",
-    "@semantic-release/github": "^10.0.3",
+    "@openapi-typescript-infra/coconfig": "^4.7.1",
+    "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/github": "^12.0.9",
     "@types/lodash.difference": "^4.5.9",
     "@types/lodash.intersection": "^4.4.9",
     "@types/lodash.topath": "^4.5.9",
     "@types/lodash.union": "^4.6.9",
     "@types/lodash.uniq": "^4.5.9",
-    "@types/node": "^20.12.11",
+    "@types/node": "^26.1.1",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
-    "coconfig": "^1.5.2",
-    "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.29.1",
+    "coconfig": "^1.6.2",
+    "esbuild": "^0.20.2",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.2",
+    "eslint-import-resolver-typescript": "^3.10.1",
+    "eslint-plugin-import": "^2.32.0",
     "jison": "^0.4.18",
+    "prettier": "^3.9.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5",
-    "vitest": "^1.6.0"
+    "typescript": "^5.9.3",
+    "vitest": "^1.6.1"
   },
   "dependencies": {
     "lodash.difference": "^4.5.0",
